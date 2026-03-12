@@ -52,45 +52,70 @@ This project processes a dataset of daily electricity consumption records across
 
 ## 📂 Project Structure
 
-```
-tableau/
-├── requirements.txt                    # Python dependencies
-├── Consumption.csv                     # Raw input dataset
-├── Consumption_Clean.csv               # Cleaned dataset (exported)
-├── consumption.db                      # SQLite database (auto-generated)
-│
-├── 01_database_setup.py               # Step 1: Load & prepare database
-├── 02_data_cleaning.py                # Step 2: Validate data integrity
-├── 03_visualizations.py               # Step 3: Generate 12 PNG charts
-├── 04_dashboard.py                    # Step 4: Launch Streamlit app
-│
-├── charts/                            # Generated visualizations
-│   ├── 01_2019_state_consumption.png
-│   ├── 02_2020_state_consumption.png
-│   ├── 03_total_consumption.png
-│   ├── 04_usage_by_region.png
-│   ├── 05_top_bottom_n.png
-│   ├── 06_monthwise_consumption.png
-│   ├── 07_region_total_pie.png
-│   ├── 08_before_after_lockdown.png
-│   ├── 09_region_state_heatmap.png
-│   ├── 10_quarter_usage.png
-│   ├── 11_metro_city_usage.png
-│   └── 12_usage_by_year_boxplot.png
-│
-├── .venv/                             # Virtual environment
-└── README.md                          # This file
+```mermaid
+graph TB
+    subgraph "Input"
+        A["Consumption.csv<br/>16,599 rows"]
+    end
+    
+    subgraph "ETL Scripts"
+        B["01_database_setup.py"]
+        C["02_data_cleaning.py"]
+        D["03_visualizations.py"]
+        E["04_dashboard.py"]
+    end
+    
+    subgraph "Output"
+        F["consumption.db<br/>SQLite Database"]
+        G["Consumption_Clean.csv"]
+        H["charts/<br/>12 PNG files"]
+        I["Streamlit Web App<br/>Port 8501"]
+    end
+    
+    A --> B
+    B --> F
+    F --> C
+    C --> G
+    F --> D
+    D --> H
+    F --> E
+    E --> I
 ```
 
 ---
 
-## 🚀 Quick Start
+## � Quick Reference Guide
 
-### Prerequisites
-- **Python 3.7+** (tested on Python 3.12)
-- **pip** or **conda**
-
-### 1. Install Dependencies
+```mermaid
+graph TB
+    subgraph "Step 1: SQL Loading"
+        A["python 01_database_setup.py"]
+        A1["✓ Consumption.csv loaded<br/>✓ 16,587 records<br/>✓ 7 tables created"]
+    end
+    
+    subgraph "Step 2: Data Validation"
+        B["python 02_data_cleaning.py"]
+        B1["✓ Zero nulls<br/>✓ Zero duplicates<br/>✓ Clean CSV exported"]
+    end
+    
+    subgraph "Step 3: Visualizations"
+        C["python 03_visualizations.py"]
+        C1["✓ 12 charts generated<br/>✓ Saved to charts/<br/>✓ Ready for presentations"]
+    end
+    
+    subgraph "Step 4: Dashboard Launch"
+        D["streamlit run 04_dashboard.py"]
+        D1["🌐 Access localhost:8501<br/>🎚️ Live filtering<br/>📥 CSV export ready"]
+    end
+    
+    A --> A1
+    B --> B1
+    C --> C1
+    D --> D1
+    A1 --> B
+    B1 --> C
+    C1 --> D
+```
 
 ```bash
 cd tableau
@@ -157,45 +182,79 @@ Open **http://localhost:8501** in your browser.
 
 ---
 
-## 📉 12 Visualizations
+## � Visualization Types & Coverage
 
-| # | Chart | Type | Purpose |
-|---|-------|------|---------|
-| **01** | 2019 State Consumption | Horizontal Bar | Rank states by 2019 electricity use |
-| **02** | 2020 State Consumption | Horizontal Bar | Rank states by 2020 electricity use |
-| **03** | Total Consumption | Stacked Bar | Compare 2019 vs 2020 by state |
-| **04** | Usage by Region | Grouped Bar | Regional trends (NR, WR, SR, ER, NER) |
-| **05** | Top N / Bottom N States | 2×Bar | Highest & lowest 10 consumers |
-| **06** | Month-wise Consumption | Line Chart | Monthly trend analysis 2019–2020 |
-| **07** | Region-wise Total | Pie Chart | Market share by region |
-| **08** | Before & After Lockdown | Grouped Bar | COVID-19 impact (2020-03-25 cutoff) |
-| **09** | Region × State Heatmap | Heatmap | State performance by region |
-| **10** | Quarter Usage | Line Chart | Quarterly trends across years |
-| **11** | Metro City Usage | Grouped Bar | Top 6 metro states (Delhi, Mumbai, TN, etc.) |
-| **12** | Usage Distribution | Box Plot | Statistical distribution by year |
+```mermaid
+graph TB
+    A["12 Visualizations"]
+    
+    subgraph "Categorical Comparisons"
+        B["01-02: State Consumption<br/>Horizontal Bars"]
+        C["04: Region Analysis<br/>Grouped Bars"]
+        D["05: Top/Bottom N<br/>Ranking Bars"]
+        E["11: Metro Cities<br/>City Comparison"]
+    end
+    
+    subgraph "Trends Over Time"
+        F["06: Month-wise<br/>Line Chart"]
+        G["10: Quarterly<br/>Line Chart"]
+    end
+    
+    subgraph "Composition & Distribution"
+        H["07: Region Share<br/>Pie Chart"]
+        I["03: Stacked Total<br/>Stacked Bar"]
+        J["12: Distribution<br/>Box Plot"]
+    end
+    
+    subgraph "Multivariate Analysis"
+        K["08: Lockdown Impact<br/>Grouped Bar"]
+        L["09: Region×State<br/>Heatmap"]
+    end
+    
+    A --> B
+    A --> C
+    A --> D
+    A --> E
+    A --> F
+    A --> G
+    A --> H
+    A --> I
+    A --> J
+    A --> K
+    A --> L
+```
 
 ---
 
-## 🎛️ Interactive Dashboard Features
+## 👤 User Journey — Interactive Dashboard
 
-### Filters (Sidebar)
-- 📅 **Year** — Multi-select (2019, 2020)
-- 🌍 **Region** — Multi-select (NR, WR, SR, ER, NER)
-- 📍 **State** — Multi-select (all 33 states/UTs)
-- 🏆 **Top N** — Slider (5–20) for top/bottom analysis
-
-### Sections
-1. **KPI Cards** — Total consumption, averages, YoY change
-2. **State Consumption (2019/2020)** — Separate tabs by year
-3. **Region Analysis** — Bar & pie charts
-4. **Month-wise Trends** — Line chart with annotations
-5. **Before & After Lockdown** — Impact visualization
-6. **Quarterly Usage** — Trend analysis
-7. **Top N / Bottom N** — Configurable ranking
-8. **Metro Cities** — Focus on high-consumption states
-9. **Heatmap** — State vs Region matrix
-10. **Data Table** — Raw filtered data
-11. **CSV Download** — Export filtered results
+```mermaid
+graph LR
+    A["Open Dashboard<br/>localhost:8501"]
+    
+    B["Sidebar Filters"]
+    
+    C1["Select Year"]
+    C2["Select Region"]
+    C3["Select State"]
+    C4["Adjust Top N"]
+    
+    D["Filter Applied"]
+    
+    E1["View KPI Cards"]
+    E2["Check State Trends"]
+    E3["Analyze Regions"]
+    E4["Review Lockdown Impact"]
+    E5["Explore Metro Cities"]
+    
+    F["Export Data<br/>CSV Download"]
+    
+    A --> B
+    B --> C1 & C2 & C3 & C4
+    C1 & C2 & C3 & C4 --> D
+    D --> E1 & E2 & E3 & E4 & E5
+    E1 & E2 & E3 & E4 & E5 --> F
+```
 
 ---
 
@@ -209,13 +268,15 @@ Open **http://localhost:8501** in your browser.
 ✅ **Positive usage values** — All ≥ 0.3 MU  
 
 ### Regional Distribution
-| Region | States | % of Total |
-|--------|--------|-----------|
-| Northern Region (NR) | 9 | ~26% |
-| Western Region (WR) | 6 | ~28% |
-| Southern Region (SR) | 6 | ~22% |
-| Eastern Region (ER) | 5 | ~15% |
-| North-Eastern Region (NER) | 7 | ~9% |
+```mermaid
+graph LR
+    A["33 States/UTs<br/>16,587 Records"]
+    A --> B["🔵 Northern Region<br/>NR - 9 States<br/>~26% Usage"]
+    A --> C["🟡 Western Region<br/>WR - 6 States<br/>~28% Usage"]
+    A --> D["🟢 Southern Region<br/>SR - 6 States<br/>~22% Usage"]
+    A --> E["🔴 Eastern Region<br/>ER - 5 States<br/>~15% Usage"]
+    A --> F["🟣 NE Region<br/>NER - 7 States<br/>~9% Usage"]
+```
 
 ### Top 5 Consumers (2019–2020 Combined)
 1. **Uttar Pradesh** — Largest consumer
@@ -232,7 +293,27 @@ Open **http://localhost:8501** in your browser.
 
 ---
 
-## 🛢️ Database Schema
+## 🛢️ Database Schema & Transformation
+
+### Data Transformation Steps
+
+```mermaid
+graph LR
+    A["Raw CSV<br/>6 columns<br/>States, Regions<br/>latitude, longitude<br/>Dates, Usage"]
+    
+    B["Parsing & Enrichment<br/>Date parsing<br/>Date_Str YYYY-MM-DD<br/>Year extraction<br/>Month extraction<br/>Month_Name"]
+    
+    C["Feature Engineering<br/>Quarter calc<br/>Lockdown flag<br/>Region_Full name<br/>Is_Metro flag"]
+    
+    D["Database Load<br/>13 columns<br/>16,587 rows<br/>Zero nulls<br/>Zero duplicates"]
+    
+    E["Aggregation<br/>6 summary tables<br/>state_year<br/>monthly<br/>region_total<br/>lockdown<br/>quarter<br/>metro"]
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+```
 
 ### Main Table: `consumption`
 ```sql
@@ -266,26 +347,26 @@ Is_Metro         | INTEGER   | Metro state flag (0/1)
 
 ## 🔄 Data Flow
 
-```
-Consumption.csv (raw)
-    ↓
-01_database_setup.py
-    ├─ Parse dates
-    ├─ Add time features (Year, Month, Quarter)
-    ├─ Flag lockdown period
-    ├─ Flag metro cities
-    └─ Load to SQLite consumption.db
-    ↓
-02_data_cleaning.py
-    ├─ Validate nulls, duplicates
-    ├─ Generate statistics
-    └─ Export Consumption_Clean.csv
-    ↓
-03_visualizations.py (Static)
-    └─ Generate 12 PNG charts → charts/
-    ↓
-04_dashboard.py (Interactive)
-    └─ Streamlit web app (http://localhost:8501)
+```mermaid
+graph TD
+    A["📄 Consumption.csv<br/>(16,599 rows)"] 
+    B["01_database_setup.py"]
+    C["🗄️ consumption.db<br/>(SQLite)"]
+    D["02_data_cleaning.py"]
+    E["📊 Consumption_Clean.csv<br/>(exported)"]
+    F["03_visualizations.py"]
+    G["🖼️ 12 PNG Charts<br/>(charts/)"]
+    H["04_dashboard.py"]
+    I["🌐 Streamlit App<br/>(localhost:8501)"]
+    
+    A -->|Load & Parse| B
+    B -->|Date Features<br/>Lockdown Flag<br/>Metro Flag| C
+    C -->|Validate Data| D
+    D -->|Export Clean| E
+    C -->|Query| F
+    F -->|Matplotlib<br/>Seaborn<br/>Plotly| G
+    C -->|Query | H
+    H -->|Interactive<br/>Filters| I
 ```
 
 ---
@@ -358,7 +439,53 @@ mkdir charts
 
 ---
 
-## 📚 Technologies Used
+---
+
+## 🛠️ Technology Stack
+
+```mermaid
+graph TB
+    subgraph "Backend"
+        A["Python 3.12"]
+        B["SQLite Database"]
+        C["SQLAlchemy ORM"]
+    end
+    
+    subgraph "Data Processing"
+        D["Pandas<br/>Data Manipulation"]
+        E["NumPy<br/>Numerical Ops"]
+    end
+    
+    subgraph "Visualization - Static"
+        F["Matplotlib<br/>Core plotting"]
+        G["Seaborn<br/>Statistical viz"]
+    end
+    
+    subgraph "Visualization - Interactive"
+        H["Plotly<br/>Web charts"]
+    end
+    
+    subgraph "Frontend"
+        I["Streamlit<br/>Web Framework"]
+    end
+    
+    A --> B
+    A --> D
+    A --> E
+    A --> F
+    A --> G
+    A --> H
+    A --> I
+    D --> C
+    D --> F
+    D --> G
+    D --> H
+    F --> I
+    H --> I
+    I -->|Runs @ localhost:8501| J["🌐 Browser<br/>Interactive Dashboard"]
+```
+
+### Technology Details
 
 | Technology | Purpose |
 |-----------|---------|
@@ -372,16 +499,22 @@ mkdir charts
 
 ---
 
-## 📅 Timeline & Milestones
+## 📅 ETL Pipeline Timeline
 
-| Step | Description | Time |
-|------|-------------|------|
-| 1️⃣ | Load CSV → SQLite | < 1 min |
-| 2️⃣ | Validate & clean data | < 1 min |
-| 3️⃣ | Generate 12 charts | ~2-3 min |
-| 4️⃣ | Launch dashboard | Instant |
-
-**Total setup time:** ~5 minutes (one-time)
+```mermaid
+timeline
+    title Data Analytics Pipeline Execution
+    section Setup
+        Install Dependencies : done, 0, 2m
+        Configure Environment : done, 2m, 1m
+    section Processing
+        01 Database Setup : done, 3m, 1m
+        02 Data Cleaning : done, 4m, 1m
+        03 Visualizations : done, 5m, 3m
+    section Delivery
+        04 Dashboard Ready : active, 8m, 30s
+        Available @ localhost:8501 : crit, 8m, 30m
+```
 
 ---
 
